@@ -1,0 +1,44 @@
+menu "INA219 Configuration"
+
+    config INA219_I2C_PORT
+        int "I2C Port Number"
+        default 0
+        help
+            I2C peripheral number to use (0 or 1).
+
+    config INA219_SDA_GPIO
+        int "SDA GPIO Number"
+        default 21
+        help
+            GPIO pin number for I2C SDA line.
+
+    config INA219_SCL_GPIO
+        int "SCL GPIO Number"
+        default 22
+        help
+            GPIO pin number for I2C SCL line.
+
+    config INA219_I2C_CLK_SPEED
+        int "I2C Clock Speed (Hz)"
+        default 100000
+        help
+            I2C bus clock frequency in Hz. Default is 100 kHz.
+
+    config INA219_DEV_ADDR
+        hex "INA219 Device Address"
+        default 0x40
+        help
+            7-bit I2C address of the INA219 sensor.
+            Default is 0x40 (A0 and A1 pins connected to GND).
+            See README for the full address table.
+
+    config INA219_CALIBRATION_VALUE
+        int "Calibration Register Value"
+        default 4096
+        help
+            Value written to the Calibration register (0x05).
+            This depends on your shunt resistor value and desired
+            current measurement range. See the INA219 datasheet
+            for the calibration calculation.
+
+endmenu
