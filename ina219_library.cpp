@@ -5,7 +5,7 @@ INA219::INA219(i2c_master_bus_handle_t bus_handle, uint8_t dev_addr) : _dev_addr
     i2c_device_config_t dev_cfg = {};
     dev_cfg.dev_addr_length = I2C_ADDR_BIT_LEN_7;
     dev_cfg.device_address = _dev_addr;
-    dev_cfg.scl_speed_hz = 100000;
+    dev_cfg.scl_speed_hz = CONFIG_INA219_I2C_CLK_SPEED;
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &_dev_handle));
 };

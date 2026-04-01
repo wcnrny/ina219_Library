@@ -13,9 +13,10 @@ private:
     static constexpr uint8_t REG_CALIBRATION = 0x05;
 
 public:
-    INA219(i2c_master_bus_handle_t bus_handle, uint8_t dev_addr);
+    INA219(i2c_master_bus_handle_t bus_handle,
+           uint8_t dev_addr = CONFIG_INA219_DEV_ADDR);
 
-    esp_err_t calibrate(uint16_t cal_value);
+    esp_err_t calibrate(uint16_t cal_value = CONFIG_INA219_CALIBRATION_VALUE);
 
     float readCurrent_mA();
     ~INA219();
