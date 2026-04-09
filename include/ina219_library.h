@@ -11,6 +11,7 @@ private:
     static constexpr uint8_t REG_CONFIG = 0x00;
     static constexpr uint8_t REG_CURRENT = 0x04;
     static constexpr uint8_t REG_CALIBRATION = 0x05;
+    static constexpr uint8_t REG_BUS_VOLTAGE = 0x02;
 
 public:
     INA219(i2c_master_bus_handle_t bus_handle,
@@ -21,5 +22,5 @@ public:
     float readCurrent_mA();
     ~INA219();
 
-    float readBusVoltage_V();
+    esp_err_t readBusVoltage_V(float *out_voltage);
 };
