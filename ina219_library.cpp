@@ -17,14 +17,13 @@ esp_err_t INA219::calibrate(uint16_t cal_value)
     payload[1] = static_cast<uint8_t>(cal_value >> 8);
     payload[2] = static_cast<uint8_t>(cal_value & 0xFF);
 
-    return i2c_master_transmit(_dev_handle, payload, sizeof(payload), -1);
+    return i2c_master_transmit(_dev_handle, payload, sizeof(payload), 100);
 };
 
 float INA219::readCurrent_mA()
 {
-    uint8_t reg_addr = 0x04;
     uint8_t rx_data[2];
-    esp_err_t err = i2c_master_transmit_receive(_dev_handle, &reg_addr, 1, rx_data, sizeof(rx_data), -1);
+    esp_err_t err = i2c_master_transmit_receive(_dev_handle, &REG_CURRENT, 1, rx_data, sizeof(rx_data), 100);
 
     if (err != ESP_OK)
     {
@@ -48,14 +47,14 @@ INA219::~INA219()
     _dev_handle = NULL;
 };
 
-float INA219::readBusVoltage_V()
+float INA219::readBusVoltage_V(float *out_voltage)
 {
-    uint8_t reg_addr = 0x02;
     uint8_t rx_data[2];
 
-    if (i2c_master_transmit_receive(_dev_handle, &reg_addr, 1, rx_data, 2, -1) != ESP_OK)
+    esp_err_t err = i2c_master_transmit_receive(_dev_handle, &REG_BUS_VOLTAGE, 1, rx_data, 2, 100);
+    if (err != ESP_OK)
     {
-        return 0.0f;
+        return err;
     }
 
     uint16_t raw_status = (uint16_t)((rx_data[0] << 8) | rx_data[1]);
@@ -73,5 +72,6 @@ float INA219::readBusVoltage_V()
      * And from the same page as the referred previously, we need to multiply 4 mV to compute the actual bus voltage read from
      * the sensor.
      */
-    return (float)raw_voltage * 0.004f;
+    *out_voltage = (float)raw_voltage * 0.004f;
+    return ESP_OK;
 }

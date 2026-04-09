@@ -1,0 +1,14 @@
+version: "1.0.0"
+maintainers:
+  - Cevat Furkan Erkara <furkan@wcnrny.tr>
+description: "ESP-IDF component for Texas Instruments INA219 bidirectional current and voltage sensor over I2C."
+license: "MIT"
+tags:
+  - current
+  - voltage
+  - sensor
+files:
+  use_gitignore: true
+repository: "https://github.com/wcnrny/ina219_Library.git"
+dependencies:
+  idf: ">=5.0"
