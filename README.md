@@ -9,7 +9,7 @@ INA219 is a current and voltage sensing chip that communicates over I2C. It can 
 ## Wiring
 
 | INA219 Pin | ESP32 Pin |
-|------------|-----------|
+| ---------- | --------- |
 | SDA        | I2C SDA   |
 | SCL        | I2C SCL   |
 | VCC        | 3.3V      |
@@ -47,7 +47,7 @@ These are compiled-in defaults. You can still override them in code by passing d
 The INA219 address depends on how A0 and A1 pins are wired:
 
 | A1  | A0  | Address |
-|-----|-----|---------|
+| --- | --- | ------- |
 | GND | GND | 0x40    |
 | GND | VS+ | 0x41    |
 | GND | SDA | 0x42    |
@@ -101,8 +101,18 @@ The calibration value depends on your shunt resistor and desired measurement ran
 ### 4. Read Measurements
 
 ```cpp
-float voltage = sensor.readBusVoltage_V();
-float current = sensor.readCurrent_mA();
+float voltage;
+esp_err_t err_voltage = sensor.readBusVoltage_V(&voltage);
+
+if(err_voltage != ESP_OK) {
+    // Voltage failure logic here
+}
+float current;
+esp_err_t err_current = sensor.readCurrent_mA(&current);
+
+if(err_current != ESP_OK) {
+    // Current failure logic here
+}
 
 printf("Bus Voltage: %.2f V\n", voltage);
 printf("Current: %.2f mA\n", current);
@@ -118,20 +128,22 @@ Constructor. Takes an I2C master bus handle and the sensor's 7-bit address. Adds
 
 Writes `cal_value` to the Calibration register (0x05). This determines the current measurement resolution and range. Returns `ESP_OK` on success.
 
-### `float readCurrent_mA()`
+### `esp_err_t readCurrent_mA(float *out_current)`
 
-Reads the Current register (0x04) and returns the value in milliamps. Returns `-1.0f` on I2C error.
+Reads the Current register (0x04) and writes the value in milliamps to `out_current`. Returns `ESP_OK` on success, or an `esp_err_t` error code on I2C failure.
 
 How it works:
+
 - Reads 2 bytes from the register (MSB first)
 - Combines them into a signed 16-bit integer (current can be negative)
 - Multiplies by 0.01 to convert to mA (each LSB = 0.01 mA per datasheet)
 
-### `float readBusVoltage_V()`
+### `esp_err_t readBusVoltage_V(float *out_voltage)`
 
-Reads the Bus Voltage register (0x02) and returns the value in Volts. Returns `0.0f` on I2C error.
+Reads the Bus Voltage register (0x02) and writes the value in Volts to `out_voltage`. Returns `ESP_OK` on success, or an `esp_err_t` error code on I2C failure.
 
 How it works:
+
 - Reads 2 bytes from the register
 - The bus voltage bits are not right-aligned in the register — the first 3 bits are status flags (CNVR, OVF)
 - Shifts right by 3 to extract the 13-bit voltage value

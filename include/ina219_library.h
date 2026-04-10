@@ -19,7 +19,7 @@ public:
 
     esp_err_t calibrate(uint16_t cal_value = CONFIG_INA219_CALIBRATION_VALUE);
 
-    float readCurrent_mA();
+    esp_err_t readCurrent_mA(float *out_current);
     ~INA219();
 
     esp_err_t readBusVoltage_V(float *out_voltage);
