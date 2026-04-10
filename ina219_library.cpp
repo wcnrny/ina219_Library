@@ -20,14 +20,14 @@ esp_err_t INA219::calibrate(uint16_t cal_value)
     return i2c_master_transmit(_dev_handle, payload, sizeof(payload), 100);
 };
 
-float INA219::readCurrent_mA()
+esp_err_t INA219::readCurrent_mA(float *out_current)
 {
     uint8_t rx_data[2];
     esp_err_t err = i2c_master_transmit_receive(_dev_handle, &REG_CURRENT, 1, rx_data, sizeof(rx_data), 100);
 
     if (err != ESP_OK)
     {
-        return -1.0f;
+        return err;
     }
 
     int16_t raw_current = (rx_data[0] << 8) | rx_data[1];
@@ -38,8 +38,8 @@ float INA219::readCurrent_mA()
      * https://www.ti.com/lit/ds/symlink/ina219.pdf#%5B%7B%22num%22%3A87%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C0%2C575.3%2C0%5D
      * as we calculated
      */
-    float current_ma = raw_current * 0.01f;
-    return current_ma;
+    *out_current = (float)raw_current * 0.01f;
+    return ESP_OK;
 };
 INA219::~INA219()
 {
@@ -47,7 +47,7 @@ INA219::~INA219()
     _dev_handle = NULL;
 };
 
-float INA219::readBusVoltage_V(float *out_voltage)
+esp_err_t INA219::readBusVoltage_V(float *out_voltage)
 {
     uint8_t rx_data[2];
 
